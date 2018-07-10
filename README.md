@@ -1,3 +1,7 @@
+EDIT (10-Jul-18): Time permitting, I will add standard handler(s) for static files, for the "Netduino: Connected Things Using C# and .NET!" on Hackster.io. I have not received my Netduino 3 Wifi yet, so not sure if I'll deliver for contest timeframe (time I'm allocating to this).
+
+
+
 ![Maple](Supporting_Files/Design/Maple_Banner.png)
 
 Maple is an ultra-lightweight RESTful web server built specifically for network enabled Netduino devices. It's fully .NET MicroFramework 4.3 compatible, provides an easy to extend architecture, and has native JSON support.
