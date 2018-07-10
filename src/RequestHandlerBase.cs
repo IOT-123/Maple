@@ -65,9 +65,9 @@ namespace Maple
             }
         }
 
-        protected void Send(string output)
+        protected void Send(byte[] data)
         {
-            WriteOutputStream(Encoding.UTF8.GetBytes(output != null ? output: string.Empty));
+            WriteOutputStream(data);
 
         }
 
