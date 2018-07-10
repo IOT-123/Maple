@@ -171,6 +171,8 @@ namespace Maple
 
                     if (!wasMethodFound)
                     {
+
+                        //ToDo: THIS IS WHERE getResources can be evoked
                         context.Response.StatusCode = 404;
                         context.Response.Close();
                     }
