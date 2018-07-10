@@ -132,6 +132,8 @@ namespace Maple
                     string[] urlParams = urlQuery[0].Split('/');
                     string methodName = context.Request.HttpMethod + urlParams[0];
 
+                    context.Request.InputStream
+
                     Debug.Print("Received " + context.Request.HttpMethod + " " + context.Request.RawUrl + " - Invoking " + methodName);
 
                     // convention for method is "{http method}{method name}"
@@ -171,9 +173,37 @@ namespace Maple
 
                     if (!wasMethodFound)
                     {
-                        //ToDo: handle other verbs POST PUT DELETE?
-                        // bool getResources(string filepath)
-                        //ToDo: THIS IS WHERE getResources can be evoked
+                        //IF POST
+                        //StreamReader reader = new StreamReader(HttpContext.Current.Request.InputStream);
+                        //string requestFromPost = reader.ReadToEnd();
+
+
+                        /*https://msdn.microsoft.com/en-us/library/system.web.httprequest.inputstream%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+ystem.IO.Stream str; String strmContents;
+Int32 counter, strLen, strRead;
+// Create a Stream object.
+str = Request.InputStream;
+// Find number of bytes in stream.
+strLen = Convert.ToInt32(str.Length);
+// Create a byte array.
+byte[] strArr = new byte[strLen];
+// Read stream into byte array.
+strRead = str.Read(strArr, 0, strLen);
+
+// Convert byte array to a text string.
+strmContents = "";
+for (counter = 0; counter < strLen; counter++)
+{
+    strmContents = strmContents + strArr[counter].ToString();            
+}
+                         */
+
+                        //ToDo: handle other verbs POST PUT DELETE? via context.Request.HttpMethod
+                        // bool getResource(string filepath)
+                        // bool putResource(string filepath) // create
+                        // bool deleteResource(string filepath)
+                        // bool postResource(string filepath, Stream inputStream) // update
+                        //ToDo: THIS IS WHERE getResource can be evoked
                         //object[] parametersArray = new object[] { urlParams[0] };
                         //object target = handler;
                         //((IRequestHandler)target).Context = context;
@@ -181,7 +211,7 @@ namespace Maple
                         //bool found = getResourcesMethod.Invoke(target, parametersArray);
                         //if (!found)
                         //{
-                            context.Response.StatusCode = 404;
+                        context.Response.StatusCode = 404;
                             context.Response.Close();
                         //}
                     }
@@ -196,7 +226,35 @@ namespace Maple
                 }
             }
         }
+
+
+
+
+
+
+
+
+        private string GetDocumentContents(System.Web.HttpRequestBase Request)
+        {
+            string documentContents;
+            using (Stream receiveStream = Request.InputStream)
+            {
+                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
+                {
+                    documentContents = readStream.ReadToEnd();
+                }
+            }
+            return documentContents;
+        }
+
+
+
     }
+
+
+
 }
+
+
 
 // nuget pack Maple.csproj -Prop Configuration=Release -Prop Platform=AnyCPU
