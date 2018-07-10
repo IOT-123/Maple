@@ -171,10 +171,18 @@ namespace Maple
 
                     if (!wasMethodFound)
                     {
-
+                        // bool getResources(string filepath)
                         //ToDo: THIS IS WHERE getResources can be evoked
-                        context.Response.StatusCode = 404;
-                        context.Response.Close();
+                        //object[] parametersArray = new object[] { urlParams[0] };
+                        //object target = handler;
+                        //((IRequestHandler)target).Context = context;
+                        //MethodInfo getResourcesMethod = magicType.GetMethod("getResources");
+                        //bool found = getResourcesMethod.Invoke(target, parametersArray);
+                        //if (!wasMethodFound)
+                        //{
+                            context.Response.StatusCode = 404;
+                            context.Response.Close();
+                        //}
                     }
                 }
                 catch (SocketException e)
