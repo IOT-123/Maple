@@ -171,6 +171,7 @@ namespace Maple
 
                     if (!wasMethodFound)
                     {
+                        //ToDo: handle other verbs POST PUT DELETE?
                         // bool getResources(string filepath)
                         //ToDo: THIS IS WHERE getResources can be evoked
                         //object[] parametersArray = new object[] { urlParams[0] };
@@ -178,7 +179,7 @@ namespace Maple
                         //((IRequestHandler)target).Context = context;
                         //MethodInfo getResourcesMethod = magicType.GetMethod("getResources");
                         //bool found = getResourcesMethod.Invoke(target, parametersArray);
-                        //if (!wasMethodFound)
+                        //if (!found)
                         //{
                             context.Response.StatusCode = 404;
                             context.Response.Close();
