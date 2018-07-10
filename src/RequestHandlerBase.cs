@@ -65,6 +65,12 @@ namespace Maple
             }
         }
 
+        protected void Send(string output)
+        {
+            WriteOutputStream(Encoding.UTF8.GetBytes(output != null ? output: string.Empty));
+
+        }
+
         private string ReadInputStream()
         {
             int i = 0;
