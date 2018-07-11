@@ -175,7 +175,6 @@ namespace Maple
                     if (!wasMethodFound) {
                         if (resourceRequestHandler == null) {
                             send404(context);
-                            return;
                         }
                         Type handlerType = resourceRequestHandler is Type ? (Type)resourceRequestHandler : resourceRequestHandler.GetType();
                         ((IRequestHandler)resourceRequestHandler).Context = context;
@@ -191,32 +190,12 @@ namespace Maple
                                 resourceMethodName = methodPrefix + resourceMethodName;
                                 parametersArray = new object[] { urlParams[0] }; // path
                                 invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
-                                //resourceMethod = handlerType.GetMethod(resourceMethodName);
-                                //if (resourceMethod == null) {
-                                //    send404(context);
-                                //    return;
-                                //}
-                                //methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
-                                //if (!methodSuccess) {
-                                //    send404(context);
-                                //    return;
-                                //}
                                 break;
                             case "PUT":
                             case "POST":
                                 resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
                                 parametersArray = new object[] { urlParams[0], context.Request.InputStream }; // path
                                 invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
-                                //resourceMethod = handlerType.GetMethod(resourceMethodName);
-                                //if (resourceMethod == null) {
-                                //    send404(context);
-                                //    return;
-                                //}
-                                //methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
-                                //if (!methodSuccess) {
-                                //    send404(context);
-                                //    return;
-                                //}
                                 break;
                             default:
                                 send404(context);
