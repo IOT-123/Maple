@@ -32,6 +32,7 @@
   <ItemGroup>
     <Compile Include="ContentTypes.cs" />
     <Compile Include="IRequestHandler.cs" />
+    <Compile Include="IResourceRequestHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapleServer.cs" />
     <Compile Include="RequestHandlerBase.cs" />

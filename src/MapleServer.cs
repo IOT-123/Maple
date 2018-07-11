@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Collections;
 using System.Text;
+using System.Reflection;
 
 namespace Maple
 {
@@ -15,6 +16,7 @@ namespace Maple
         private HttpListener server;
         private Thread connection;
         private ArrayList handlers;
+        private Type resourceRequestHandler = null;
 
         /// <param name="prefix">http or https</param>
         public MapleServer(string prefix, int port)
@@ -97,7 +99,6 @@ namespace Maple
                 // Get classes that implement IRequestHandler
                 var type = typeof(IRequestHandler);
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
                 foreach (var assembly in assemblies)
                 {
                     var types = assembly.GetTypes();
@@ -106,12 +107,11 @@ namespace Maple
                         if (t.BaseType != null)
                         {
                             var interfaces = t.BaseType.GetInterfaces();
-                            if (interfaces.Length > 0)
-                            {
-                                foreach (var inter in interfaces)
-                                {
-                                    if (inter == typeof(IRequestHandler))
-                                    {
+                            if (interfaces.Length > 0) {
+                                foreach (var inter in interfaces) {
+                                    if (resourceRequestHandler == null && inter == typeof(IResourceRequestHandler)) {
+                                        resourceRequestHandler = t;
+                                    } else if (inter == typeof(IRequestHandler)) {
                                         requestHandlers.Add(t);
                                     }
                                 }
@@ -126,16 +126,11 @@ namespace Maple
             {
                 try
                 {
-
                     HttpListenerContext context = server.GetContext();
                     string[] urlQuery = context.Request.RawUrl.Substring(1).Split('?');
                     string[] urlParams = urlQuery[0].Split('/');
                     string methodName = context.Request.HttpMethod + urlParams[0];
-
-                    context.Request.InputStream
-
                     Debug.Print("Received " + context.Request.HttpMethod + " " + context.Request.RawUrl + " - Invoking " + methodName);
-
                     // convention for method is "{http method}{method name}"
                     // would love to convert this to two attributes: HttpGet, Mapping/Route
                     bool wasMethodFound = false;
@@ -171,87 +166,84 @@ namespace Maple
                         if (wasMethodFound) break;
                     }
 
-                    if (!wasMethodFound)
-                    {
-                        //IF POST
-                        //StreamReader reader = new StreamReader(HttpContext.Current.Request.InputStream);
-                        //string requestFromPost = reader.ReadToEnd();
-
-
-                        /*https://msdn.microsoft.com/en-us/library/system.web.httprequest.inputstream%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
-ystem.IO.Stream str; String strmContents;
-Int32 counter, strLen, strRead;
-// Create a Stream object.
-str = Request.InputStream;
-// Find number of bytes in stream.
-strLen = Convert.ToInt32(str.Length);
-// Create a byte array.
-byte[] strArr = new byte[strLen];
-// Read stream into byte array.
-strRead = str.Read(strArr, 0, strLen);
-
-// Convert byte array to a text string.
-strmContents = "";
-for (counter = 0; counter < strLen; counter++)
-{
-    strmContents = strmContents + strArr[counter].ToString();            
-}
-                         */
-
-                        //ToDo: handle other verbs POST PUT DELETE? via context.Request.HttpMethod
-                        // bool getResource(string filepath)
-                        // bool putResource(string filepath) // create
-                        // bool deleteResource(string filepath)
-                        // bool postResource(string filepath, Stream inputStream) // update
-                        //ToDo: THIS IS WHERE getResource can be evoked
-                        //object[] parametersArray = new object[] { urlParams[0] };
-                        //object target = handler;
-                        //((IRequestHandler)target).Context = context;
-                        //MethodInfo getResourcesMethod = magicType.GetMethod("getResources");
-                        //bool found = getResourcesMethod.Invoke(target, parametersArray);
-                        //if (!found)
-                        //{
-                        context.Response.StatusCode = 404;
-                            context.Response.Close();
-                        //}
+                    if (!wasMethodFound) {
+                        if (resourceRequestHandler == null) {
+                            send404(context);
+                            return;
+                        }
+                        Type handlerType = resourceRequestHandler is Type ? (Type)resourceRequestHandler : resourceRequestHandler.GetType();
+                        ((IRequestHandler)resourceRequestHandler).Context = context;
+                        object[] parametersArray;
+                        // resource method names changed from IRequestHandler conventions for visibility
+                        var resourceMethodName = "Resource";
+                        var httpMethod = context.Request.HttpMethod.ToUpper();
+                        switch (httpMethod) {
+                            case "GET":
+                            case "DELETE":
+                                resourceMethodName = httpMethod == "GET" ? "read" + resourceMethodName : "remove" + resourceMethodName;
+                                parametersArray = new object[] { urlParams[0] }; // path
+                                invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                //resourceMethod = handlerType.GetMethod(resourceMethodName);
+                                //if (resourceMethod == null) {
+                                //    send404(context);
+                                //    return;
+                                //}
+                                //methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
+                                //if (!methodSuccess) {
+                                //    send404(context);
+                                //    return;
+                                //}
+                                break;
+                            case "PUT":
+                            case "POST":
+                                resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
+                                parametersArray = new object[] { urlParams[0], context.Request.InputStream }; // path
+                                invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                //resourceMethod = handlerType.GetMethod(resourceMethodName);
+                                //if (resourceMethod == null) {
+                                //    send404(context);
+                                //    return;
+                                //}
+                                //methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
+                                //if (!methodSuccess) {
+                                //    send404(context);
+                                //    return;
+                                //}
+                                break;
+                            }
+                        }
                     }
-                }
-                catch (SocketException e)
-                {
-                    Debug.Print("Socked Exception: " + e.ToString());
-                }
-                catch (Exception ex)
-                {
+                catch (SocketException e) {
+                    Debug.Print("Socket Exception: " + e.ToString());
+                } catch (Exception ex) {
                     Debug.Print(ex.ToString());
                 }
             }
         }
 
-
-
-
-
-
-
-
-        private string GetDocumentContents(System.Web.HttpRequestBase Request)
+        private void invokeHandlerMethod(HttpListenerContext context, Type handlerType, Type resourceRequestHandler, string resourceMethodName, object[] parametersArray)
         {
-            string documentContents;
-            using (Stream receiveStream = Request.InputStream)
+            MethodInfo resourceMethod = handlerType.GetMethod(resourceMethodName);
+            if (resourceMethod == null)
             {
-                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8))
-                {
-                    documentContents = readStream.ReadToEnd();
-                }
+                send404(context);
+                return;
             }
-            return documentContents;
+            bool methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
+            if (!methodSuccess)
+            {
+                send404(context);
+                return;
+            }
         }
 
-
+        private void send404(HttpListenerContext context)
+        {
+            context.Response.StatusCode = 404;
+            context.Response.Close();
+        }
 
     }
-
-
 
 }
 

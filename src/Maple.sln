@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maple_Sample", "..\Maple_Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maple_Sample_Listener", "..\Maple_Sample_Listener\Maple_Sample_Listener.csproj", "{A1607AA4-5AD2-410F-B183-5413C7CF6454}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maple_Resource_Sample", "..\Maple_Resource_Sample\Maple_Resource_Sample.csproj", "{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,12 @@ Global
 		{A1607AA4-5AD2-410F-B183-5413C7CF6454}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1607AA4-5AD2-410F-B183-5413C7CF6454}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1607AA4-5AD2-410F-B183-5413C7CF6454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5950A44-D3E1-459B-A4AE-091E5CAE8E7E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
