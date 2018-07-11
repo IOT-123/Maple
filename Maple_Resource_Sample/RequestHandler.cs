@@ -40,6 +40,20 @@ namespace Maple_Resource_Sample
             return true;
         }
 
+        public bool preflightResource(string path)
+        {
+            // preflight logic here
+
+
+            this.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            this.Context.Response.Headers.Add("Access-Control-Max-Age", "10000");
+            this.Context.Response.Headers.Add("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
+            this.Context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            this.Context.Response.StatusCode = 204;
+            this.Context.Response.Close();
+            return true;
+        }
+
         public bool createResource(string path, Stream inputStream)
         {
             // create logic here

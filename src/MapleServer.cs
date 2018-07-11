@@ -186,7 +186,9 @@ namespace Maple
                         switch (httpMethod) {
                             case "GET":
                             case "DELETE":
-                                resourceMethodName = httpMethod == "GET" ? "read" + resourceMethodName : "remove" + resourceMethodName;
+                            case "OPTIONS":
+                                var methodPrefix = httpMethod == "GET" ? "read" : httpMethod == "DELETE" ? "remove" : "preflight";
+                                resourceMethodName = methodPrefix + resourceMethodName;
                                 parametersArray = new object[] { urlParams[0] }; // path
                                 invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
                                 //resourceMethod = handlerType.GetMethod(resourceMethodName);
@@ -215,6 +217,9 @@ namespace Maple
                                 //    send404(context);
                                 //    return;
                                 //}
+                                break;
+                            default:
+                                send404(context);
                                 break;
                             }
                         }
