@@ -175,34 +175,36 @@ namespace Maple
                     if (!wasMethodFound) {
                         if (resourceRequestHandler == null) {
                             send404(context);
-                        }
-                        Type handlerType = resourceRequestHandler is Type ? (Type)resourceRequestHandler : resourceRequestHandler.GetType();
-                        ((IRequestHandler)resourceRequestHandler).Context = context;
-                        object[] parametersArray;
-                        // resource method names changed from IRequestHandler conventions for visibility
-                        var resourceMethodName = "Resource";
-                        var httpMethod = context.Request.HttpMethod.ToUpper();
-                        switch (httpMethod) {
-                            case "GET":
-                            case "DELETE":
-                            case "OPTIONS":
-                                var methodPrefix = httpMethod == "GET" ? "read" : httpMethod == "DELETE" ? "remove" : "preflight";
-                                resourceMethodName = methodPrefix + resourceMethodName;
-                                parametersArray = new object[] { urlParams[0] }; // path
-                                invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
-                                break;
-                            case "PUT":
-                            case "POST":
-                                resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
-                                parametersArray = new object[] { urlParams[0], context.Request.InputStream }; // path
-                                invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
-                                break;
-                            default:
-                                send404(context);
-                                break;
+                        } else { 
+                            Type handlerType = resourceRequestHandler is Type ? (Type)resourceRequestHandler : resourceRequestHandler.GetType();
+                            ((IRequestHandler)resourceRequestHandler).Context = context;
+                            object[] parametersArray;
+                            // resource method names changed from IRequestHandler conventions for visibility
+                            var resourceMethodName = "Resource";
+                            var httpMethod = context.Request.HttpMethod.ToUpper();
+                            switch (httpMethod)
+                            {
+                                case "GET":
+                                case "DELETE":
+                                case "OPTIONS":
+                                    var methodPrefix = httpMethod == "GET" ? "read" : httpMethod == "DELETE" ? "remove" : "preflight";
+                                    resourceMethodName = methodPrefix + resourceMethodName;
+                                    parametersArray = new object[] { urlParams[0] }; // path
+                                    invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                    break;
+                                case "PUT":
+                                case "POST":
+                                    resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
+                                    parametersArray = new object[] { urlParams[0], context.Request.InputStream }; // path
+                                    invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                    break;
+                                default:
+                                    send404(context);
+                                    break;
                             }
                         }
                     }
+                }
                 catch (SocketException e) {
                     Debug.Print("Socket Exception: " + e.ToString());
                 } catch (Exception ex) {
