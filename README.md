@@ -1,4 +1,12 @@
-*EDIT (10-Jul-18):* Time permitting, I will add standard handler(s) for static files, for the *"Netduino: Connected Things Using C# and .NET!"* on *Hackster.io*. I have not received my Netduino 3 Wifi yet, so not sure if I'll deliver for contest timeframe (time I'm allocating to this).
+
+
+
+
+
+**EDIT (10-Jul-18):** Time permitting, I will add standard handler(s) for static files, for the **"Netduino: Connected Things Using C# and .NET!"** on **Hackster.io**. I have not received my Netduino 3 Wifi yet, so not sure if I'll deliver for contest timeframe (time I'm allocating to this).
+
+
+
 
 
 
