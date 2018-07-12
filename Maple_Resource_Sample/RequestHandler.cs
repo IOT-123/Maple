@@ -12,14 +12,14 @@ namespace Maple_Resource_Sample
     public class RequestHandler : RequestHandlerBase, IResourceRequestHandler
     {
         // if handling the response on an error condition in the method, return true, false sends a 404
+        // his.Context.Response.ContentType = ContentTypes.XXX can be used instead of base.setContentType()
         public RequestHandler() { }
 
         public bool readResource(string path)
         {
             // read logic here
 
-
-            this.Context.Response.ContentType = ContentTypes.Text_Html;
+            base.setContentType();
             this.Context.Response.StatusCode = 200;
             this.Send("<html>hello html world</html>");
             return true;
@@ -34,7 +34,7 @@ namespace Maple_Resource_Sample
             //if (!SPIFFS.exists(path))
             //    return _server.send(404, "text/plain", "FileNotFound");
 
-            this.Context.Response.ContentType = ContentTypes.Text_Plain;
+            base.setContentType();
             this.Context.Response.StatusCode = 200;
             this.Context.Response.Close();
             return true;
@@ -68,7 +68,7 @@ namespace Maple_Resource_Sample
             //else
             //    return _server.send(500, "text/plain", "CREATE FAILED");
 
-            this.Context.Response.ContentType = ContentTypes.Text_Plain;
+            base.setContentType();
             this.Context.Response.StatusCode = 200;
             this.Context.Response.Close();
             return true;
@@ -79,7 +79,7 @@ namespace Maple_Resource_Sample
 
             //    return _server.send(500, "text/plain", "BAD PATH");
 
-            this.Context.Response.ContentType = ContentTypes.Text_Plain;
+            base.setContentType();
             this.Context.Response.StatusCode = 200;
             this.Context.Response.Close();
             return true;

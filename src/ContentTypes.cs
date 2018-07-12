@@ -13,7 +13,7 @@ namespace Maple
         public const string Application_Text = "text/plain";
         public const string Application_Octet_Stream = "application/octet-stream";
         public const string Application_Javascript = "application/javascript";
-        public const string Application_Pdf = "application/x-pdf";
+        public const string Application_X_Pdf = "application/x-pdf";
         public const string Application_X_Zip = "application/x-zip";
         public const string Application_X_Gzip = "application/x-gzip";
         public const string Text_Plain = "text/plain";

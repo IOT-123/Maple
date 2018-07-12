@@ -189,13 +189,13 @@ namespace Maple
                                 case "OPTIONS":
                                     var methodPrefix = httpMethod == "GET" ? "read" : httpMethod == "DELETE" ? "remove" : "preflight";
                                     resourceMethodName = methodPrefix + resourceMethodName;
-                                    parametersArray = new object[] { urlParams[0] }; // path
+                                    parametersArray = new object[] { urlQuery[0] }; // path
                                     invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
                                     break;
                                 case "PUT":
                                 case "POST":
                                     resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
-                                    parametersArray = new object[] { urlParams[0], context.Request.InputStream }; // path
+                                    parametersArray = new object[] { urlQuery[0], context.Request.InputStream }; // path
                                     invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
                                     break;
                                 default:

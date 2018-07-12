@@ -1,5 +1,10 @@
+/*
+ * 2018-07-12 Nic Roche: add setContentType and send overload
+ * 
+ * 
+*/
+
 using System;
-using Microsoft.SPOT;
 using System.Net;
 using System.Collections;
 using System.Text;
@@ -68,7 +73,6 @@ namespace Maple
         protected void Send(byte[] data)
         {
             WriteOutputStream(data);
-
         }
 
         private string ReadInputStream()
@@ -127,6 +131,55 @@ namespace Maple
                 return a;
             else
                 return b;
+        }
+
+        protected void setContentType()
+        {
+            string[] urlQuery = _context.Request.RawUrl.Substring(1).Split('?');
+            var filename = urlQuery[0].ToLower();
+            int index = filename.LastIndexOf('.');
+            string fileExtension = filename.Substring(index);
+            //if (_server.hasArg("download")) return "application/octet-stream";
+            switch (fileExtension)
+            {
+                case ".htm":
+                case ".html":
+                    this.Context.Response.ContentType = ContentTypes.Text_Html;
+                    break;
+                case ".css":
+                    this.Context.Response.ContentType = ContentTypes.Text_Css;
+                    break;
+                case ".js":
+                    this.Context.Response.ContentType = ContentTypes.Application_Javascript;
+                    break;
+                case ".png":
+                    this.Context.Response.ContentType = ContentTypes.Image_Png;
+                    break;
+                case ".gif":
+                    this.Context.Response.ContentType = ContentTypes.Image_Gif;
+                    break;
+                case ".jpg":
+                    this.Context.Response.ContentType = ContentTypes.Image_Jpeg;
+                    break;
+                case ".ico":
+                    this.Context.Response.ContentType = ContentTypes.Image_X_Icon;
+                    break;
+                case ".xml":
+                    this.Context.Response.ContentType = ContentTypes.Text_Xml;
+                    break;
+                case ".pdf":
+                    this.Context.Response.ContentType = ContentTypes.Application_X_Pdf;
+                    break;
+                case ".zip":
+                    this.Context.Response.ContentType = ContentTypes.Application_X_Zip;
+                    break;
+                case ".gz":
+                    this.Context.Response.ContentType = ContentTypes.Application_X_Gzip;
+                    break;
+                default:
+                    this.Context.Response.ContentType = ContentTypes.Text_Plain;
+                    break;
+            }
         }
     }
 }
