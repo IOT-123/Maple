@@ -12,7 +12,7 @@ namespace Maple_Resource_Sample
     public class RequestHandler : RequestHandlerBase, IResourceRequestHandler
     {
         // if handling the response on an error condition in the method, return true, false sends a 404
-        // his.Context.Response.ContentType = ContentTypes.XXX can be used instead of base.setContentType()
+        // this.Context.Response.ContentType = ContentTypes.XXX can be used instead of base.setContentType()
         public RequestHandler() { }
 
         public bool readResource(string path)

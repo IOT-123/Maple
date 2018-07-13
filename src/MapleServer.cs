@@ -75,7 +75,7 @@ namespace Maple
 
         protected void Init()
         {
-            ThreadStart starter = delegate { Context(handlers); };
+            ThreadStart starter = delegate { Context(handlers, resourceRequestHandler); };
             connection = new Thread(starter);
             connection.Start();
         }
@@ -98,7 +98,7 @@ namespace Maple
             }
         }
 
-        protected void Context(ArrayList requestHandlers)
+        protected void Context(ArrayList requestHandlers, Type resourceHandler)
         {
             if (requestHandlers.Count == 0)
             {
@@ -115,8 +115,8 @@ namespace Maple
                             var interfaces = t.BaseType.GetInterfaces();
                             if (interfaces.Length > 0) {
                                 foreach (var inter in interfaces) {
-                                    if (resourceRequestHandler == null && inter == typeof(IResourceRequestHandler)) {
-                                        resourceRequestHandler = t;
+                                    if (resourceHandler == null && inter == typeof(IResourceRequestHandler)) {
+                                        resourceHandler = t;
                                     } else if (inter == typeof(IRequestHandler)) {
                                         requestHandlers.Add(t);
                                     }
@@ -173,11 +173,11 @@ namespace Maple
                     }
 
                     if (!wasMethodFound) {
-                        if (resourceRequestHandler == null) {
+                        if (resourceHandler == null) {
                             send404(context);
                         } else { 
-                            Type handlerType = resourceRequestHandler is Type ? (Type)resourceRequestHandler : resourceRequestHandler.GetType();
-                            ((IRequestHandler)resourceRequestHandler).Context = context;
+                            Type handlerType = resourceHandler is Type ? (Type)resourceHandler : resourceHandler.GetType();
+                            ((IRequestHandler)resourceHandler).Context = context;
                             object[] parametersArray;
                             // resource method names changed from IRequestHandler conventions for visibility
                             var resourceMethodName = "Resource";
@@ -190,13 +190,13 @@ namespace Maple
                                     var methodPrefix = httpMethod == "GET" ? "read" : httpMethod == "DELETE" ? "remove" : "preflight";
                                     resourceMethodName = methodPrefix + resourceMethodName;
                                     parametersArray = new object[] { urlQuery[0] }; // path
-                                    invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                    invokeHandlerMethod(context, handlerType, resourceHandler, resourceMethodName, parametersArray);
                                     break;
                                 case "PUT":
                                 case "POST":
                                     resourceMethodName = httpMethod == "PUT" ? "create" + resourceMethodName : "update" + resourceMethodName;
                                     parametersArray = new object[] { urlQuery[0], context.Request.InputStream }; // path
-                                    invokeHandlerMethod(context, handlerType, resourceRequestHandler, resourceMethodName, parametersArray);
+                                    invokeHandlerMethod(context, handlerType, resourceHandler, resourceMethodName, parametersArray);
                                     break;
                                 default:
                                     send404(context);
@@ -213,7 +213,7 @@ namespace Maple
             }
         }
 
-        private void invokeHandlerMethod(HttpListenerContext context, Type handlerType, Type resourceRequestHandler, string resourceMethodName, object[] parametersArray)
+        private void invokeHandlerMethod(HttpListenerContext context, Type handlerType, Type handler, string resourceMethodName, object[] parametersArray)
         {
             MethodInfo resourceMethod = handlerType.GetMethod(resourceMethodName);
             if (resourceMethod == null)
@@ -221,7 +221,7 @@ namespace Maple
                 send404(context);
                 return;
             }
-            bool methodSuccess = (bool)resourceMethod.Invoke(resourceRequestHandler, parametersArray);
+            bool methodSuccess = (bool)resourceMethod.Invoke(handler, parametersArray);
             if (!methodSuccess)
             {
                 send404(context);
